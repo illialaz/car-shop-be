@@ -1,26 +1,26 @@
-'use strict';
+const { db } =  require('./db');
 
-module.exports.getProducts = async (event) => {
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
-    body: [
-      {
-        id: '1',
-        brand: 'Porsche',
-        model: '944s2',
-        engineCapacity: 3.0,
-        price: 4000
-      },
-      {
-        id: '2',
-        brand: 'Porsche',
-        model: '911',
-        engineCapacity: 3.4,
-        price: 20000
-      }
-    ]
-  };
+module.exports.getProductById = async (event) => {
+    const { productId } = event.pathParameters;
+
+    const product = await Promise.resolve(db.find(product => product.id === productId))
+
+    return product
+        ? {
+            statusCode: 200,
+            body: JSON.stringify(product)
+        }
+        : {
+            statusCode: 404,
+            error: 'Product not found'
+        };
+};
+
+module.exports.getProducts = async () => {
+    const products = await Promise.resolve(db);
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify(products)
+    };
 };

@@ -1,25 +1,40 @@
 service: products-service
 frameworkVersion: '3'
+useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   stage: dev
   region: eu-west-1
   httpApi:
     cors: true
 
+  environment:
+    PG_HOST: ${env:PG_HOST}
+    PG_PORT: ${env:PG_PORT}
+    PG_DATABASE: ${env:PG_DATABASE}
+    PG_USERNAME: ${env:PG_USERNAME}
+    PG_PASSWORD: ${env:PG_PASSWORD}
+
 functions:
   getProducts:
-    handler: handler.getProducts
+    handler: src/functions/get-all-cars.getAll
     events:
       - httpApi:
           method: GET
           path: /products
 
   getProductById:
-    handler: handler.getProductById
+    handler: src/functions/get-car-by-id.getById
     events:
       - httpApi:
           method: GET
-          path: /products/{productId}
+          path: /products/{carId}
+
+  createProduct:
+    handler: src/functions/create-car.createOne
+    events:
+      - httpApi:
+          method: POST
+          path: /admin/products/new
